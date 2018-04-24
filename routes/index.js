@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var userModel = require('../models/user')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -19,12 +20,14 @@ router.get('/login', function(req, res, next) {
 });
 
 router.post('/login', function(req, res) {
-  if (req.body.username == 'hello' && req.body.password == 'world') {
-    res.cookie('authorized', req.body.username);
-    res.redirect('/admin');
-  } else{
-        res.render('login', {title: '登录', flag: 1});
-  }
+  userModel.findByName(req.body.username).then(function(user) {
+    if (user.userName == req.body.username && user.email == req.body.password) {
+      // res.cookie('authorized', req.body.username);
+      res.redirect('/admin');
+    } else {
+      res.render('login', {title: '登录', flag: 1});
+    }
+  })
 });
 
 module.exports = router;
